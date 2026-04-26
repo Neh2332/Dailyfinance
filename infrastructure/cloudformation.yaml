@@ -1,0 +1,159 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Daily Finance — AWS Infrastructure (Free Tier)
+  Provisions S3, DynamoDB, SQS, and Lambda resources.
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues: [dev, staging, prod]
+
+Resources:
+  # ── S3: Report Storage ──────────────────────────────────────
+  ReportsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'daily-finance-reports-${Environment}'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireOldReports
+            Status: Enabled
+            ExpirationInDays: 90
+
+  # ── DynamoDB: Activity Logs ─────────────────────────────────
+  ActivityLogsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub 'daily-finance-activity-${Environment}'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userId
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+
+  # ── DynamoDB: Price Cache ───────────────────────────────────
+  PriceCacheTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub 'daily-finance-prices-${Environment}'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: symbol
+          AttributeType: S
+      KeySchema:
+        - AttributeName: symbol
+          KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+
+  # ── SQS: Report Generation Queue ───────────────────────────
+  ReportQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub 'daily-finance-reports-queue-${Environment}'
+      VisibilityTimeout: 300
+      MessageRetentionPeriod: 86400
+
+  # ── SQS: Price Update Queue ────────────────────────────────
+  PriceUpdateQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub 'daily-finance-price-updates-${Environment}'
+      VisibilityTimeout: 60
+
+  # ── Lambda Execution Role ──────────────────────────────────
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'daily-finance-lambda-role-${Environment}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: DailyFinanceLambdaPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:GetItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                Resource:
+                  - !GetAtt ActivityLogsTable.Arn
+                  - !GetAtt PriceCacheTable.Arn
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                Resource: !Sub '${ReportsBucket.Arn}/*'
+              - Effect: Allow
+                Action:
+                  - sqs:ReceiveMessage
+                  - sqs:DeleteMessage
+                  - sqs:GetQueueAttributes
+                Resource:
+                  - !GetAtt ReportQueue.Arn
+                  - !GetAtt PriceUpdateQueue.Arn
+
+  # ── Lambda: Data Fetch Engine ──────────────────────────────
+  DataFetchFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub 'daily-finance-data-fetch-${Environment}'
+      Runtime: python3.11
+      Handler: lambda_handler.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 60
+      MemorySize: 256
+      Environment:
+        Variables:
+          ENVIRONMENT: !Ref Environment
+          PRICES_TABLE: !Ref PriceCacheTable
+          REPORTS_BUCKET: !Ref ReportsBucket
+      Code:
+        ZipFile: |
+          # Placeholder — deploy actual code via CI/CD
+          def lambda_handler(event, context):
+              return {"statusCode": 200, "body": "Daily Finance Lambda"}
+
+  # ── Lambda: SQS Trigger for Reports ────────────────────────
+  ReportQueueTrigger:
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      EventSourceArn: !GetAtt ReportQueue.Arn
+      FunctionName: !GetAtt DataFetchFunction.Arn
+      BatchSize: 1
+      Enabled: true
+
+Outputs:
+  ReportsBucketName:
+    Value: !Ref ReportsBucket
+  ActivityLogsTableName:
+    Value: !Ref ActivityLogsTable
+  PriceCacheTableName:
+    Value: !Ref PriceCacheTable
+  ReportQueueUrl:
+    Value: !Ref ReportQueue
+  LambdaFunctionArn:
+    Value: !GetAtt DataFetchFunction.Arn

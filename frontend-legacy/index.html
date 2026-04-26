@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Finance — Archived Records</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.1/knockout-latest.min.js"></script>
+  <link rel="stylesheet" href="legacy.css">
+</head>
+<body>
+  <header class="legacy-header">
+    <span class="legacy-badge">Knockout.js Legacy Portal</span>
+    <h1>Archived Records</h1>
+  </header>
+  <div class="legacy-container">
+    <div class="stats-row">
+      <div class="legacy-card stat-box">
+        <div class="stat-value" data-bind="text: totalRecords()">0</div>
+        <div class="stat-label">Total Records</div>
+      </div>
+      <div class="legacy-card stat-box">
+        <div class="stat-value positive" data-bind="text: '$' + totalValue().toLocaleString()">$0</div>
+        <div class="stat-label">Historical Value</div>
+      </div>
+      <div class="legacy-card stat-box">
+        <div class="stat-value" data-bind="text: filteredRecords().length">0</div>
+        <div class="stat-label">Showing</div>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <input type="text" class="search-input" placeholder="Search symbol or name..." data-bind="value: searchQuery, valueUpdate: 'afterkeydown'" />
+      <button class="filter-btn" data-bind="click: function(){setFilter('ALL')}, css:{active:activeFilter()==='ALL'}">All</button>
+      <button class="filter-btn" data-bind="click: function(){setFilter('STOCK')}, css:{active:activeFilter()==='STOCK'}">Stocks</button>
+      <button class="filter-btn" data-bind="click: function(){setFilter('CRYPTO')}, css:{active:activeFilter()==='CRYPTO'}">Crypto</button>
+      <button class="filter-btn" data-bind="click: function(){setFilter('CASH')}, css:{active:activeFilter()==='CASH'}">Cash</button>
+    </div>
+    <div class="legacy-card">
+      <div class="legacy-title">Historical Transaction Records</div>
+      <table>
+        <thead><tr><th>Date</th><th>Symbol</th><th>Name</th><th>Type</th><th>Action</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
+        <tbody data-bind="foreach: filteredRecords">
+          <tr>
+            <td class="date-cell" data-bind="text: date"></td>
+            <td class="symbol-cell" data-bind="text: symbol"></td>
+            <td data-bind="text: name"></td>
+            <td><span class="type-tag" data-bind="text: type, css: type"></span></td>
+            <td data-bind="text: action, css:{positive:action==='BUY',negative:action==='SELL'}"></td>
+            <td data-bind="text: quantity"></td>
+            <td data-bind="text: '$'+price.toLocaleString()"></td>
+            <td style="font-weight:600" data-bind="text: '$'+(price*quantity).toLocaleString()"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="footer-note">Built with <strong>Knockout.js 3.5</strong> — Legacy integration with the Spring Boot API.</div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

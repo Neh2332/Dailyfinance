@@ -1,0 +1,31 @@
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#0a0e1a;color:#f1f5f9;min-height:100vh}
+.legacy-header{background:linear-gradient(135deg,#0a0e1a,#1e293b);border-bottom:1px solid rgba(255,255,255,.08);padding:1rem 2rem;display:flex;align-items:center;gap:.75rem}
+.legacy-badge{background:rgba(245,158,11,.15);color:#f59e0b;padding:3px 10px;border-radius:4px;font-size:.7rem;font-weight:700;text-transform:uppercase}
+.legacy-header h1{font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#f59e0b,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.legacy-container{max-width:1200px;margin:2rem auto;padding:0 2rem}
+.legacy-card{background:linear-gradient(145deg,rgba(17,24,39,.9),rgba(30,41,59,.5));border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;backdrop-filter:blur(10px)}
+.legacy-title{font-size:.85rem;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem}
+.filter-bar{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.filter-btn{padding:6px 16px;border-radius:8px;border:1px solid rgba(255,255,255,.08);background:transparent;color:#94a3b8;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .25s ease;font-family:'Inter',sans-serif}
+.filter-btn:hover{background:rgba(255,255,255,.03);color:#f1f5f9}
+.filter-btn.active{background:rgba(16,185,129,.2);color:#10b981;border-color:rgba(16,185,129,.3)}
+.search-input{flex:1;min-width:200px;padding:6px 16px;background:#111827;border:1px solid rgba(255,255,255,.08);border-radius:8px;color:#f1f5f9;font-size:.85rem;font-family:'Inter',sans-serif}
+.search-input:focus{outline:none;border-color:#10b981}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:.5rem 1rem;font-size:.75rem;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid rgba(255,255,255,.08)}
+td{padding:.6rem 1rem;font-size:.85rem;border-bottom:1px solid rgba(255,255,255,.03)}
+tr:hover td{background:rgba(255,255,255,.02)}
+.symbol-cell{font-weight:700}
+.date-cell{color:#64748b;font-size:.8rem}
+.positive{color:#10b981}
+.negative{color:#ef4444}
+.type-tag{padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:700;text-transform:uppercase}
+.type-tag.STOCK{background:rgba(59,130,246,.15);color:#3b82f6}
+.type-tag.CRYPTO{background:rgba(139,92,246,.15);color:#8b5cf6}
+.type-tag.CASH{background:rgba(16,185,129,.15);color:#10b981}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem}
+.stat-box{text-align:center}
+.stat-value{font-size:1.5rem;font-weight:800}
+.stat-label{font-size:.75rem;color:#64748b;margin-top:.25rem}
+.footer-note{text-align:center;color:#64748b;font-size:.75rem;margin-top:2rem;padding:1rem}
