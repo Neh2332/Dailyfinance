@@ -12,7 +12,6 @@ A professional-grade, multi-source financial tracking platform. Daily Finance in
 - [Environment Configuration](#environment-configuration)
 - [Available Scripts](#available-scripts)
 - [Deployment](#deployment)
-- [Troubleshooting](#troubleshooting)
 
 ---
 
