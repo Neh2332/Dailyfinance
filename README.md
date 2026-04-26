@@ -55,8 +55,8 @@ Follow these steps to get the entire multi-source architecture running locally.
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/omnitrack.git
-cd omnitrack
+git clone https://github.com/your-username/Dailyfinance.git
+cd Dailyfinance
 ```
 
 ### 2. Start AWS LocalStack Emulator
@@ -119,7 +119,7 @@ Simply open `frontend-legacy/index.html` directly in any modern browser.
 ### Directory Structure
 
 ```text
-omnitrack/
+dailyfinance/
 ├── backend-java/          # Core Spring Boot API
 │   ├── src/main/java/     # Controllers, Services, Repositories, Models
 │   ├── src/main/resources/# application.properties, schema
